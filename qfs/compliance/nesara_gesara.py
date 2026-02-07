@@ -176,10 +176,13 @@ class NESARAGESARACompliance:
         """Check debt elimination compliance."""
         # Check if transaction supports debt elimination
         is_debt_relief = data.get("type") in ["debt_forgiveness", "debt_elimination"]
+        is_positive = data.get("amount", 0) >= 0
+        
+        is_compliant = is_debt_relief or is_positive
         
         return {
-            "status": ComplianceStatus.COMPLIANT.value if is_debt_relief or data.get("amount", 0) >= 0 else ComplianceStatus.COMPLIANT.value,
-            "message": "Debt elimination protocols verified"
+            "status": ComplianceStatus.COMPLIANT.value if is_compliant else ComplianceStatus.NON_COMPLIANT.value,
+            "message": "Debt elimination protocols verified" if is_compliant else "Transaction may create debt"
         }
     
     def _check_wealth_redistribution(self, data: Dict[str, Any]) -> Dict[str, Any]:

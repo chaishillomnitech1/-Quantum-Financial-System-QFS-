@@ -311,9 +311,14 @@ class WealthDistributor:
         if n == 0 or sum(values) == 0:
             return 0.0
         
-        # Calculate Gini coefficient
+        # Calculate Gini coefficient using standard formula
+        # G = (2 * sum(i * x_i)) / (n * sum(x_i)) - (n + 1) / n
+        # Simplified to be in range [0, 1]
         cumsum = 0
-        for i, value in enumerate(values):
-            cumsum += (n - i) * value
+        for i, value in enumerate(values, 1):  # Start from 1 for proper indexing
+            cumsum += i * value
         
-        return (2 * cumsum) / (n * sum(values)) - (n + 1) / n
+        gini = (2 * cumsum) / (n * sum(values)) - (n + 1) / n
+        
+        # Ensure result is in [0, 1] range
+        return max(0.0, min(1.0, gini))
